@@ -1,22 +1,24 @@
-use std::{convert::TryFrom,time::SystemTime};
-use chrono::{DateTime, Utc};
-use mongodb::bson::{oid::ObjectId, DateTime as BsonDateTime};
+use std::{convert::TryFrom, time::SystemTime};
+
+use super::{dog_model::Dog, owner_model::Owner};
+use chrono::Utc;
+use mongodb::bson::{oid::ObjectId, DateTime};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize)]
-pub struct Booking{
+pub struct Booking {
     pub _id: ObjectId,
     pub owner: ObjectId,
-    pub start_time: DataTime,
-    pub duration_in_minutes:u8,
-    pub cancelled: bool
+    pub start_time: DateTime,
+    pub duration_in_minutes: u8,
+    pub cancelled: bool,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
-pub struct BookingRequest{
+#[derive(Debug, Deserialize)]
+pub struct BookingRequest {
     pub owner: String,
     pub start_time: String,
-    pub duration_in_minutes:u8,
+    pub duration_in_minutes: u8,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -29,14 +31,14 @@ pub struct FullBooking {
     pub cancelled: bool,
 }
 
-impl TryFrom<BookingRequest> for Booking{
+impl TryFrom<BookingRequest> for Booking {
     type Error = Box<dyn std::error::Error>;
 
-    fn try_from(item:BookingRequest)-> Result<Self,Self::Error>{
+    fn try_from(item: BookingRequest) -> Result<Self, Self::Error> {
         let chrono_datetime: SystemTime = chrono::DateTime::parse_from_rfc3339(&item.start_time)
-        .map_err(|err| format!("Failed to parse start_time: {}", err))?
-        .with_timezone(&Utc)
-        .into();
+            .map_err(|err| format!("Failed to parse start_time: {}", err))?
+            .with_timezone(&Utc)
+            .into();
 
         Ok(Self {
             _id: ObjectId::new(),
@@ -46,5 +48,4 @@ impl TryFrom<BookingRequest> for Booking{
             cancelled: false,
         })
     }
-    
 }

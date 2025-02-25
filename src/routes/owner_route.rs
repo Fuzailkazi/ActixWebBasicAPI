@@ -1,5 +1,5 @@
 use crate::{
-    models::dog_model::{Dog, DogRequest},
+    models::owner_model::{Owner, OwnerRequest},
     services::db::Database,
 };
 use actix_web::{
@@ -8,17 +8,17 @@ use actix_web::{
     HttpResponse,
 };
 
-#[post("/dog")]
-pub async fn create_dog(db: Data<Database>, request: Json<DogRequest>) -> HttpResponse {
+#[post("/owner")]
+pub async fn create_owner(db: Data<Database>, request: Json<OwnerRequest>) -> HttpResponse {
     match db
-        .create_dog(
-            Dog::try_from(DogRequest {
-                owner: request.owner.clone(),
+        .create_owner(
+            Owner::try_from(OwnerRequest {
                 name: request.name.clone(),
-                age: request.age.clone(),
-                breed: request.breed.clone(),
+                email: request.email.clone(),
+                phone: request.phone.clone(),
+                address: request.address.clone(),
             })
-            .expect("Error converting DogRequest to Dog."),
+            .expect("Error converting OwnerRequest to Owner."),
         )
         .await
     {
